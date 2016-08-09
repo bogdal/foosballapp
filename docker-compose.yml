@@ -1,0 +1,13 @@
+web:
+  build: .
+  environment:
+    - DATABASE_URL=postgres://foosball:foosball@postgres/foosball
+    - REDIS_URL=redis://redis/
+    - SECRET_KEY
+    - SLACK_CLIENT_ID
+    - SLACK_CLIENT_SECRET
+    - SLACK_VERIFICATION_TOKEN
+  ports:
+    - '4000:4000'
+  volumes:
+    - .:/app
