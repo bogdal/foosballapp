@@ -37,10 +37,8 @@ WORKDIR /app
 
 RUN mix local.hex --force
 RUN mix local.rebar
-RUN mix deps.get
 
 RUN npm install && npm install --save-dev babel-cli babel-preset-es2015
 
-
 EXPOSE 4000
-CMD elixir -S mix phoenix.server
+CMD mix deps.get && elixir -S mix phoenix.server
