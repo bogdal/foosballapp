@@ -12,7 +12,7 @@ config :foosball,
 # Configures the endpoint
 config :foosball, Foosball.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "QfenKwG5O7eXRWWaY9zdKi/tcLNe24CGm9+Wp0L/7uwdn9VB+KRM/BOj+bbX0kjd",
+  secret_key_base: System.get_env("SECRET_KEY"),
   render_errors: [view: Foosball.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Foosball.PubSub,
            adapter: Phoenix.PubSub.PG2]
@@ -21,6 +21,10 @@ config :foosball, Foosball.Endpoint,
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
+
+config :foosball, Foosball.Repo,
+  adapter: Ecto.Adapters.Postgres,
+  url: System.get_env("DATABASE_URL")
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
