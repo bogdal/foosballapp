@@ -36,7 +36,7 @@ defmodule Foosball.Endpoint do
   plug Plug.Session,
     store: :cookie,
     key: "_foosball_key",
-    signing_salt: "fN5JZxcS"
+    signing_salt: "bZ/LlYNe"
 
   plug Foosball.Router
 end

@@ -12,7 +12,7 @@ config :foosball,
 # Configures the endpoint
 config :foosball, Foosball.Endpoint,
   url: [host: "localhost"],
-  secret_key_base: "He/cUPoEjxBZQSwVPeP8zkIn7F9vL5mXn+q2VHJGz1Gid/3mJHO+GhA3g0/JQbl3",
+  secret_key_base: "QfenKwG5O7eXRWWaY9zdKi/tcLNe24CGm9+Wp0L/7uwdn9VB+KRM/BOj+bbX0kjd",
   render_errors: [view: Foosball.ErrorView, accepts: ~w(html json)],
   pubsub: [name: Foosball.PubSub,
            adapter: Phoenix.PubSub.PG2]
