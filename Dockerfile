@@ -32,11 +32,8 @@ ENV PHOENIX_VERSION 1.2.0
 
 RUN mix archive.install --force https://github.com/phoenixframework/archives/raw/master/phoenix_new-$PHOENIX_VERSION.ez
 
-WORKDIR /
-
-RUN mix phoenix.new blog
-
-WORKDIR blog
+ADD . /app
+WORKDIR /app
 
 RUN mix local.hex --force
 RUN mix local.rebar
@@ -44,8 +41,6 @@ RUN mix deps.get
 
 RUN npm install && npm install --save-dev babel-cli babel-preset-es2015
 
-RUN echo '{ "presets": ["es2015"] }' > .babelrc
 
 EXPOSE 4000
-
 CMD elixir -S mix phoenix.server
