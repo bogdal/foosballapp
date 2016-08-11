@@ -16,7 +16,7 @@ defmodule Foosball.Router do
   scope "/", Foosball do
     pipe_through :browser # Use the default browser stack
 
-    get "/slack/oauth/", SlackController, :oauth
+    get "/slack/oauth/", AuthController, :oauth
     get "/slack/", SlackController, :index
     get "/", PageController, :index
   end
