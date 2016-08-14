@@ -14,9 +14,30 @@ defmodule Foosball.Slack do
     url <> "?" <> Plug.Conn.Query.encode(params)
   end
 
+  def request_data(conn) do
+    if conn.params["payload"] do
+      {:message, conn.params["payload"] |> Poison.decode!}
+    else
+      {:command, conn.params}
+    end
+  end
+
+  def verify_token(data) do
+    case data do
+      {_, params} ->
+        if params["token"] == System.get_env("SLACK_VERIFICATION_TOKEN") do
+          data
+        end
+    end
+  end
+
   def send(message, url) do
     encoded_message = Poison.encode!(message)
     HTTPoison.post(url, encoded_message)
+    message
+  end
+
+  def add_player(message, player) do
     message
   end
 end
