@@ -13,4 +13,10 @@ defmodule Foosball.Slack do
   def get_url(url, params \\ []) do
     url <> "?" <> Plug.Conn.Query.encode(params)
   end
+
+  def send(message, url) do
+    encoded_message = Poison.encode!(message)
+    HTTPoison.post(url, encoded_message)
+    message
+  end
 end
