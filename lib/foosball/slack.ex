@@ -45,14 +45,12 @@ defmodule Foosball.Slack do
     end
   end
 
-  def add_player(message, player) do
-    # fields = %{
-    #   attachments: [%{
-    #     fields: [%{
-    #       title: "Players",
-    #       value: "@#{player}"}]}]}
-    #
-    # Map.merge(message, fields)
+  def update_players(message, players) do
+    fields = %{
+      fields: [%{
+        title: "Players",
+        value: players |> Enum.map(fn n -> "@#{n}" end) |> Enum.join ", "}]}
     message
+    |> Map.put(:attachments, [hd(message[:attachments]) |> Map.merge(fields)])
   end
 end
