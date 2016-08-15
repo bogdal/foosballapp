@@ -33,8 +33,25 @@ defmodule Foosball.Slack do
 
   def send(message, url) do
     encoded_message = Poison.encode!(message)
-    HTTPoison.post(url, encoded_message)
-    message
+    case HTTPoison.post(url, encoded_message) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        body
+    end
+  end
+
+  def chat_post_message(message) do
+    url = "https://slack.com/api/chat.postMessage"
+    params = %{message | attachments: Poison.encode!(message[:attachments])}
+    case HTTPoison.post(url, params_to_body(params)) do
+      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
+        body
+    end
+  end
+
+  defp params_to_body(params) do
+    params
+    |> Enum.map(fn {key, value} -> "#{key}=#{URI.encode_www_form(value)}" end)
+    |> Enum.join("&")
   end
 
   def update_title(message, text) do
@@ -73,11 +90,25 @@ defmodule Foosball.Slack do
       fields = %{
         fields: [%{
           title: "Players",
-          value: players |> Enum.map(fn n -> "@#{n}" end) |> Enum.join ", "}]}
+          value: players |> join_names}]}
     else
       fields = %{fields: []}
     end
     message
     |> Map.put(:attachments, [hd(message[:attachments]) |> Map.merge(fields)])
+  end
+
+  def join_names(names) do
+    names |> Enum.map(fn n -> "<@#{n}>" end) |> Enum.join ", "
+  end
+
+  def team_collected(message, players) do
+    if length(players) == 4 do
+      message = %{
+        response_type: "in_channel",
+        text: "Team collected :+1:"}
+    else
+      message
+    end
   end
 end
