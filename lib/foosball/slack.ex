@@ -45,6 +45,19 @@ defmodule Foosball.Slack do
     end
   end
 
+  def get_players(message) do
+    field_value =
+      message
+      |> Map.get("attachments")
+      |> hd
+      |> Map.get("fields", [%{}])
+      |> hd
+      |> Map.get("value", "")
+
+    Regex.scan(~r/(?<=@)\w+/, field_value)
+    |> List.flatten
+  end
+
   def update_players(message, players) do
     fields = %{
       fields: [%{
