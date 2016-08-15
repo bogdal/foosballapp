@@ -9,9 +9,13 @@ defmodule Foosball.SlackController do
     conn
     |> Slack.request_data
     |> Slack.verify_token
-    |> handle_request
+    |> handle_async_request
 
     text conn, ""
+  end
+
+  defp handle_async_request(data) do
+    Task.async(fn -> handle_request(data) end)
   end
 
   defp handle_request(data) do
