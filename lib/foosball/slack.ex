@@ -37,7 +37,22 @@ defmodule Foosball.Slack do
     message
   end
 
+  def update_title(message, text) do
+    if String.length(text) > 0 do
+      Map.put(message, :text, "<!here> #{text}")
+    else
+      message
+    end
+  end
+
   def add_player(message, player) do
+    # fields = %{
+    #   attachments: [%{
+    #     fields: [%{
+    #       title: "Players",
+    #       value: "@#{player}"}]}]}
+    #
+    # Map.merge(message, fields)
     message
   end
 end

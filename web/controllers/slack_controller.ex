@@ -30,13 +30,18 @@ defmodule Foosball.SlackController do
               value: "add"}]}]}
     case data do
       {:command, params} ->
+        Logger.debug("Command '#{params["command"]}'")
         message
+        |> Slack.update_title(params["text"])
         |> Slack.add_player(params["user_name"])
         |> Slack.send(params["response_url"])
       {:message, params} ->
-        message
-        |> Slack.add_player(params["user_name"])
-        |> Slack.send(params["response_url"])
+        for action <- params["actions"] do
+          Logger.debug("Action '#{action["value"]}'")
+          message
+          |> Slack.add_player(params["user_name"])
+          |> Slack.send(params["response_url"])
+        end
     end
   end
 end
