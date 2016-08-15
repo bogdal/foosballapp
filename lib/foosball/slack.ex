@@ -58,11 +58,25 @@ defmodule Foosball.Slack do
     |> List.flatten
   end
 
+  def add_or_remove_player(players, name) do
+    if name in players do
+      players
+      |> List.delete(name)
+    else
+      players
+      |> List.insert_at(-1, name)
+    end
+  end
+
   def update_players(message, players) do
-    fields = %{
-      fields: [%{
-        title: "Players",
-        value: players |> Enum.map(fn n -> "@#{n}" end) |> Enum.join ", "}]}
+    if length(players) > 0 do
+      fields = %{
+        fields: [%{
+          title: "Players",
+          value: players |> Enum.map(fn n -> "@#{n}" end) |> Enum.join ", "}]}
+    else
+      fields = %{fields: []}
+    end
     message
     |> Map.put(:attachments, [hd(message[:attachments]) |> Map.merge(fields)])
   end

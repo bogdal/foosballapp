@@ -39,10 +39,13 @@ defmodule Foosball.SlackController do
       {:message, params} ->
         for action <- params["actions"] do
           Logger.debug("Action '#{action["value"]}'")
-          players = Slack.get_players(params["original_message"])
-          # Logger.debug(players)
-          # message
-          # |> Slack.send(params["response_url"])
+          players =
+            Slack.get_players(params["original_message"])
+            |> Slack.add_or_remove_player(params["user"]["name"])
+
+          message
+          |> Slack.update_players(players)
+          |> Slack.send(params["response_url"])
         end
     end
   end
