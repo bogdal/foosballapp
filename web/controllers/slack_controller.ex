@@ -42,7 +42,11 @@ defmodule Foosball.SlackController do
           players =
             Slack.get_players(params["original_message"])
             |> Slack.add_or_remove_player(params["user"]["name"])
+          {_, title} =
+            params["original_message"]["text"]
+            |> String.split_at(7)
           message
+          |> Slack.update_title(title |> String.trim)
           |> Slack.update_players(players)
           |> Slack.team_collected(players)
           |> Slack.send(params["response_url"])
