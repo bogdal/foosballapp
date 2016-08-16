@@ -11,4 +11,6 @@ ADD . /app
 WORKDIR /app
 
 EXPOSE 4000
-CMD mix deps.get && elixir -S mix phoenix.server
+ENV PORT 4000
+
+CMD mix do deps.get, compile && elixir -S mix phoenix.server

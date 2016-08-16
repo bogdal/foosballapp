@@ -7,6 +7,7 @@ web:
   build: .
   environment:
     - DATABASE_URL=ecto://foosball:foosball@postgres/foosball
+    - MIX_ENV
     - SECRET_KEY
     - SLACK_CLIENT_ID
     - SLACK_CLIENT_SECRET
