@@ -3,57 +3,53 @@ defmodule Foosball.AuthController do
   use Foosball.Web, :controller
 
   alias Foosball.Team
-  alias Foosball.Slack
+  alias Foosball.SlackAuth
 
   def oauth(conn, %{"code" => code}) do
-    body = Slack.fetch("https://slack.com/api/oauth.access", %{
-      client_id: System.get_env("SLACK_CLIENT_ID"),
-      client_secret: System.get_env("SLACK_CLIENT_SECRET"),
+    data = SlackAuth.fetch(%{
       code: code,
-      redirect_uri: conn |> get_url(auth_path(conn, :oauth))})
+      redirect_uri: conn |> get_host_url(auth_path(conn, :oauth))})
     conn
-    |> verify_body(body)
-    |> handle_body(body)
+    |> handle_error(data)
+    |> save_access_token(data)
     |> put_flash(:info, "You have been authenticated")
     |> redirect(to: page_path(conn, :index))
   end
 
   def oauth(conn, _params) do
-    url = Slack.get_url("https://slack.com/oauth/authorize", %{
-        client_id: System.get_env("SLACK_CLIENT_ID"),
-        redirect_url: conn |> get_url,
-        scope: "commands, chat:write:bot"})
+    url = SlackAuth.get_auth_url(%{redirect_url: conn |> get_host_url})
     redirect conn, external: url
   end
 
-  defp verify_body(conn, body) do
-      if body["ok"] do
+  defp handle_error(conn, data) do
+    case data do
+      {:ok, params} ->
         conn
-      else
+      {:error, reason} ->
         conn
-        |> put_flash(:error, body["error"] || "Something went wrong")
+        |> put_flash(:error, reason)
         |> redirect(to: page_path(conn, :index))
       end
   end
 
-  defp handle_body(conn, body) do
+  defp save_access_token(conn, {_, params}) do
     team =
       Team
-      |> Repo.get_by(team_id: body["team_id"])
+      |> Repo.get_by(team_id: params["team_id"])
     if team do
       changeset = Team.changeset(team, %{
-        access_token: body["access_token"]})
+        access_token: params["access_token"]})
       Repo.update(changeset)
     else
       changeset = Team.changeset(%Team{}, %{
-        team_id: body["team_id"],
-        access_token: body["access_token"]})
+        team_id: params["team_id"],
+        access_token: params["access_token"]})
       Repo.insert(changeset)
     end
     conn
   end
 
-  defp get_url(conn, path \\ "") do
+  defp get_host_url(conn, path \\ "") do
     "https://" <> conn.host <> path
   end
 end

@@ -2,6 +2,7 @@ defmodule Foosball.SlackController do
   require Logger
   use Foosball.Web, :controller
 
+  alias Foosball.Message
   alias Foosball.Team
   alias Foosball.Slack
 
@@ -37,22 +38,22 @@ defmodule Foosball.SlackController do
       {:command, params} ->
         Logger.debug("Command '#{params["command"]}'")
         message
-        |> Slack.update_title(params["text"])
-        |> Slack.update_players([params["user_name"]])
+        |> Message.update_title(params["text"])
+        |> Message.update_players([params["user_name"]])
         |> Slack.send(params["response_url"])
       {:message, params} ->
         for action <- params["actions"] do
           Logger.debug("Action '#{action["value"]}'")
           players =
-            Slack.get_players(params["original_message"])
-            |> Slack.add_or_remove_player(params["user"]["name"])
+            Message.get_players(params["original_message"])
+            |> Message.add_or_remove_player(params["user"]["name"])
           {_, title} =
             params["original_message"]["text"]
             |> String.split_at(7)
           message
-          |> Slack.update_title(title |> String.trim)
-          |> Slack.update_players(players)
-          |> Slack.team_collected(players)
+          |> Message.update_title(title |> String.trim)
+          |> Message.update_players(players)
+          |> Message.team_collected(players)
           |> Slack.send(params["response_url"])
 
           if length(players) == 4 do
@@ -72,10 +73,10 @@ defmodule Foosball.SlackController do
                   color: "#3AA3E3",
                   fields: [%{
                       title: "Team 1",
-                      value: team1 |> Slack.join_names,
+                      value: team1 |> Message.join_names,
                       short: true}, %{
                       title: "Team 2",
-                      value: team2 |> Slack.join_names,
+                      value: team2 |> Message.join_names,
                       short: true}]}]}
             message
             |> Slack.chat_post_message
