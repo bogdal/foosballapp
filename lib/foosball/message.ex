@@ -25,7 +25,7 @@ defmodule Foosball.Message do
     if length(players) == 4 do
       message = %{
         response_type: "in_channel",
-        text: "Team collected :+1:"}
+        delete_original: true}
     else
       message
     end
@@ -47,8 +47,7 @@ defmodule Foosball.Message do
   def add_or_remove_player(players, name) do
     if name in players do
       players
-      # |> List.delete(name)
-      |> List.insert_at(-1, name)
+      |> List.delete(name)
     else
       players
       |> List.insert_at(-1, name)
@@ -58,6 +57,6 @@ defmodule Foosball.Message do
   def join_names(names) do
     names
     |> Enum.map(fn n -> "<@#{n}>" end)
-    |> Enum.join ", "
+    |> Enum.join(", ")
   end
 end

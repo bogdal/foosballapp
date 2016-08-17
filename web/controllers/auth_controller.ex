@@ -23,7 +23,7 @@ defmodule Foosball.AuthController do
 
   defp handle_error(conn, data) do
     case data do
-      {:ok, params} ->
+      {:ok, _} ->
         conn
       {:error, reason} ->
         conn

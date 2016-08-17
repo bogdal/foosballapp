@@ -32,7 +32,7 @@ defmodule Foosball.SlackAuth do
     end
   end
 
-  defp get_url(url, params \\ []) do
+  defp get_url(url, params) do
     url <> "?" <> Plug.Conn.Query.encode(params)
   end
 end
