@@ -1,11 +1,13 @@
 defmodule Foosball.SlackAuth do
 
+  alias Foosball.Slack
+
   def get_auth_url(params) do
     params =
       params
       |> Map.merge(%{
-        client_id: System.get_env("SLACK_CLIENT_ID"),
-        scope: "commands, chat:write:bot"})
+        client_id: Slack.config(:client_id),
+        scope: Slack.config(:scope)})
     get_url "https://slack.com/oauth/authorize", params
   end
 
@@ -13,8 +15,8 @@ defmodule Foosball.SlackAuth do
     params =
       params
       |> Map.merge(%{
-        client_id: System.get_env("SLACK_CLIENT_ID"),
-        client_secret: System.get_env("SLACK_CLIENT_SECRET")})
+        client_id: Slack.config(:client_id),
+        client_secret: Slack.config(:client_secret)})
     url = get_url "https://slack.com/api/oauth.access", params
 
     case HTTPoison.get(url) do

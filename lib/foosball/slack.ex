@@ -10,7 +10,7 @@ defmodule Foosball.Slack do
 
   def verify_token(data) do
     {_, params} = data
-    if params["token"] == System.get_env("SLACK_VERIFICATION_TOKEN") do
+    if params["token"] == config(:verification_token) do
       data
     else
       {:error, "Invalid token"}
@@ -32,5 +32,9 @@ defmodule Foosball.Slack do
     params
     |> Enum.map(fn {key, value} -> "#{key}=#{URI.encode_www_form(value)}" end)
     |> Enum.join("&")
+  end
+
+  def config(param) do
+    Application.get_env(:foosball, :slack)[param]
   end
 end

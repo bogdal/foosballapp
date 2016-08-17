@@ -26,6 +26,12 @@ config :foosball, Foosball.Repo,
   adapter: Ecto.Adapters.Postgres,
   url: System.get_env("DATABASE_URL")
 
+config :foosball, :slack,
+  client_id: System.get_env("SLACK_CLIENT_ID"),
+  client_secret: System.get_env("SLACK_CLIENT_SECRET"),
+  verification_token: System.get_env("SLACK_VERIFICATION_TOKEN"),
+  scope: "commands, chat:write:bot"
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{Mix.env}.exs"
