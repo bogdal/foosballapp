@@ -25,7 +25,8 @@ defmodule Foosball.Slack do
   def chat_post_message(message) do
     url = "https://slack.com/api/chat.postMessage"
     params = %{message | attachments: Poison.encode!(message[:attachments])}
-    HTTPoison.post url, params_to_body(params)
+    headers = %{"Content-type": "application/x-www-form-urlencoded"}
+    HTTPoison.post url, params_to_body(params), headers
   end
 
   defp params_to_body(params) do
