@@ -1,23 +1,26 @@
 defmodule Foosball.SlackAuth do
 
-  alias Foosball.Slack
+  alias Foosball.SlackConfig
+
+  @auth_url "https://slack.com/oauth/authorize"
+  @access_url "https://slack.com/api/oauth.access"
 
   def get_auth_url(params) do
     params =
       params
       |> Map.merge(%{
-        client_id: Slack.config(:client_id),
-        scope: Slack.config(:scope)})
-    get_url "https://slack.com/oauth/authorize", params
+        client_id: SlackConfig.get(:client_id),
+        scope: SlackConfig.get(:scope)})
+    get_url @auth_url, params
   end
 
   def fetch(params) do
     params =
       params
       |> Map.merge(%{
-        client_id: Slack.config(:client_id),
-        client_secret: Slack.config(:client_secret)})
-    url = get_url "https://slack.com/api/oauth.access", params
+        client_id: SlackConfig.get(:client_id),
+        client_secret: SlackConfig.get(:client_secret)})
+    url = get_url @access_url, params
 
     case HTTPoison.get(url) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->

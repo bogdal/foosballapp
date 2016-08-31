@@ -1,5 +1,9 @@
 defmodule Foosball.Slack do
 
+  alias Foosball.SlackConfig
+
+  @post_message_url "https://slack.com/api/chat.postMessage"
+
   def request_data(conn) do
     if conn.params["payload"] do
       {:message, conn.params["payload"] |> Poison.decode!}
@@ -10,7 +14,7 @@ defmodule Foosball.Slack do
 
   def verify_token(data) do
     {_, params} = data
-    if params["token"] == config(:verification_token) do
+    if params["token"] == SlackConfig.get(:verification_token) do
       data
     else
       {:error, "Invalid token"}
@@ -23,19 +27,14 @@ defmodule Foosball.Slack do
   end
 
   def chat_post_message(message) do
-    url = "https://slack.com/api/chat.postMessage"
     params = %{message | attachments: Poison.encode!(message[:attachments])}
     headers = %{"Content-type": "application/x-www-form-urlencoded"}
-    HTTPoison.post url, params_to_body(params), headers
+    HTTPoison.post @post_message_url, params_to_body(params), headers
   end
 
   defp params_to_body(params) do
     params
     |> Enum.map(fn {key, value} -> "#{key}=#{URI.encode_www_form(value)}" end)
     |> Enum.join("&")
-  end
-
-  def config(param) do
-    Application.get_env(:foosball, :slack)[param]
   end
 end
